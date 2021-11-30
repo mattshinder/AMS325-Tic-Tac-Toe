@@ -53,8 +53,7 @@ def check_draw(player_pos):
 # Function for a single game of Tic Tac Toe
 def single_game(cur_player):
     # Represents the Tic Tac Toe
-    values = [1,2,3,4,5,6,7,8,9]
-    #values = [' ' for x in range(9)]
+    values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     # Stores the positions occupied by X and O
     player_pos = {'X': [], 'O': []}
@@ -110,8 +109,7 @@ def single_game(cur_player):
             cur_player = 'X'
 
 
-if __name__ == "__main__":
-
+def twoplayer():
     print("Player 1")
     player1 = input("Enter the name : ")
     print("\n")
@@ -187,3 +185,18 @@ if __name__ == "__main__":
             cur_player = player2
         else:
             cur_player = player1
+
+
+if __name__ == "__main__":
+
+    # Ask for choice of game mode
+    print("Pick a Game Mode")
+    print("Enter 1 for Easy CPU")
+    print("Enter 2 for Medium CPU")
+    print("Enter 3 for Hard CPU")
+    print("Enter 4 for 2 Player")
+    gamemode = int(input("Choice: "))
+    print("\n")
+
+    if gamemode == 4:
+        twoplayer()
