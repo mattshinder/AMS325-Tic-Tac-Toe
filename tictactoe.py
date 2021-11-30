@@ -1,3 +1,6 @@
+import csv
+
+
 # Function to print Tic Tac Toe
 def print_tic_tac_toe(values):
     print("\n")
@@ -178,7 +181,32 @@ def twoplayer():
         if winner != 'D':
             player_won = player_choice[winner]
             score_board[player_won] = score_board[player_won] + 1
+            # get loser
+            player_lose = player1
+            if player_won == player1:
+                player_lose = player2
+            # update scores
+            for x in dict:
+                if x[0] == player_won:
+                    x[1] = int(x[1]) + 1
+                if x[0] == player_lose:
+                    x[2] = int(x[2]) + 1
+        if winner == 'D':
+            # update scores
+            for x in dict:
+                if x[0] == player1:
+                    x[3] = int(x[3]) + 1
+                if x[0] == player2:
+                    x[3] = int(x[3]) + 1
+        # writing to csv file
+        with open('scores.csv', 'w+') as csvfile:
+            # creating a csv writer object
+            csvwriter = csv.writer(csvfile, lineterminator="\n")
 
+            # write data to file
+            csvwriter.writerows(dict)
+
+        # scoreboard
         print_scoreboard(score_board)
         # Switch player who chooses X or O
         if cur_player == player1:
@@ -188,6 +216,14 @@ def twoplayer():
 
 
 if __name__ == "__main__":
+
+    # import csv
+    f = open('scores.csv')
+    csv_f = csv.reader(f)
+
+    dict = []
+    for row in csv_f:
+        dict.append(row)
 
     # Ask for choice of game mode
     print("Pick a Game Mode")
