@@ -186,18 +186,34 @@ def twoplayer():
             if player_won == player1:
                 player_lose = player2
             # update scores
+            playerwin = False
+            playerlose = False
             for x in dict:
                 if x[0] == player_won:
                     x[1] = int(x[1]) + 1
+                    playerwin = True
                 if x[0] == player_lose:
                     x[2] = int(x[2]) + 1
+                    playerwin = True
+            if not playerwin:
+                dict.append([player_won, 1, 0, 0])
+            if not playerlose:
+                dict.append([player_lose, 0, 1, 0])
         if winner == 'D':
             # update scores
+            play1 = False
+            play2 = False
             for x in dict:
                 if x[0] == player1:
                     x[3] = int(x[3]) + 1
+                    play1 = True
                 if x[0] == player2:
                     x[3] = int(x[3]) + 1
+                    play2 = True
+            if not play1:
+                dict.append([player1, 0, 0, 1])
+            if not play2:
+                dict.append([player2, 0, 0, 1])
         # writing to csv file
         with open('scores.csv', 'w+') as csvfile:
             # creating a csv writer object
