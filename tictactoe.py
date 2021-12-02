@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 
 
 # Function to print Tic Tac Toe
@@ -112,13 +113,179 @@ def single_game(cur_player):
             cur_player = 'X'
 
 
+# Function for a single game of Tic Tac Toe
+def cpu_game(cur_user, cur_player, mode, player):
+    # Represents the Tic Tac Toe
+    values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    # Stores the positions occupied by X and O
+    player_pos = {'X': [], 'O': []}
+
+    # Game Loop for a single game of Tic Tac Toe
+    while True:
+        print_tic_tac_toe(values)
+
+        # Try exception block for MOVE input
+        try:
+            if cur_user == 'CPU':
+                # CPU turn
+                # decipher mode
+                if mode == 'easy':
+                    # pick randomly
+                    move = np.random.randint(1, 9)
+
+
+            else:
+                print("Player ", cur_player, " turn. Which box? : ", end="")
+                move = int(input())
+        except ValueError:
+            print("Wrong Input!!! Try Again")
+            continue
+
+        # Sanity check for MOVE inout
+        if move < 1 or move > 9:
+            print("Wrong Input!!! Try Again")
+            continue
+
+        # Check if the box is not occupied already
+        if values[move - 1] != move:
+            print("Place already filled. Try again!!")
+            continue
+
+        # Update game information
+
+        # Updating grid status
+        values[move - 1] = cur_player
+
+        # Updating player positions
+        player_pos[cur_player].append(move)
+
+        # Function call for checking win
+        if check_win(player_pos, cur_player):
+            print_tic_tac_toe(values)
+            print("Player ", cur_player, " has won the game!!")
+            print("\n")
+            return cur_player
+
+        # Function call for checking draw game
+        if check_draw(player_pos):
+            print_tic_tac_toe(values)
+            print("Game Drawn")
+            print("\n")
+            return 'D'
+
+        # Switch player moves
+        if cur_user == 'CPU':
+            cur_user = player
+        else:
+            cur_user = 'CPU'
+        if cur_player == 'X':
+            cur_player = 'O'
+        else:
+            cur_player = 'X'
+
+
+def oneplayer(mode):
+    player = input("Enter player name: ")
+    cpu = 'CPU'
+    cur_player = player
+
+    # Stores the choice of players
+    player_choice = {'X': "", 'O': ""}
+    # Stores the options
+    options = ['X', 'O']
+
+    while True:
+
+        # Player choice Menu
+        print("Turn to choose for", cur_player)
+        print("Enter 1 for X")
+        print("Enter 2 for O")
+        print("Enter 3 to Quit")
+
+        # Try exception for CHOICE input
+        try:
+            choice = int(input())
+        except ValueError:
+            print("Wrong Input!!! Try Again\n")
+            continue
+
+        # Conditions for player choice
+        if choice == 1:
+            player_choice['X'] = cur_player
+            if cur_player == player:
+                player_choice['O'] = cpu
+            else:
+                player_choice['O'] = player
+
+        elif choice == 2:
+            player_choice['O'] = cur_player
+            if cur_player == player:
+                player_choice['X'] = cpu
+            else:
+                player_choice['X'] = player
+
+        elif choice == 3:
+            break
+
+        else:
+            print("Wrong Choice!!!! Try Again\n")
+
+        # Stores the winner in a single game of Tic Tac Toe
+        winner = cpu_game(cur_player, options[choice - 1], mode, player)
+
+        # Edits the scoreboard according to the winner
+        if winner != 'D':
+            player_won = player_choice[winner]
+            # get loser
+            playerwin = False
+            if player_won == player:
+                playerwin = True
+            # update scores
+            playwin = False
+            playlose = False
+            for x in dict:
+                if x[0] == player and playerwin == True:
+                    x[1] = int(x[1]) + 1
+                    playwin = True
+                if x[0] == player and playerwin == False:
+                    x[2] = int(x[2]) + 1
+                    playlose = True
+            if not playwin and playerwin:
+                dict.append([player, 1, 0, 0])
+            if not playlose and not playerwin:
+                dict.append([player, 0, 1, 0])
+        if winner == 'D':
+            # update scores
+            play1 = False
+            for x in dict:
+                if x[0] == player:
+                    x[3] = int(x[3]) + 1
+                    play1 = True
+            if not play1:
+                dict.append([player, 0, 0, 1])
+        # writing to csv file
+        with open('scores.csv', 'w+') as csvfile:
+            # creating a csv writer object
+            csvwriter = csv.writer(csvfile, lineterminator="\n")
+
+            # write data to file
+            csvwriter.writerows(dict)
+
+        # Switch player who chooses X or O
+        if cur_player == player:
+            cur_player = cpu
+        else:
+            cur_player = player
+
+
 def twoplayer():
     print("Player 1")
-    player1 = input("Enter the name : ")
+    player1 = input("Enter the name: ")
     print("\n")
 
     print("Player 2")
-    player2 = input("Enter the name : ")
+    player2 = input("Enter the name: ")
     print("\n")
 
     # Stores the player who chooses X and O
@@ -250,5 +417,11 @@ if __name__ == "__main__":
     gamemode = int(input("Choice: "))
     print("\n")
 
+    if gamemode == 1:
+        oneplayer('easy')
+    if gamemode == 2:
+        oneplayer('medium')
+    if gamemode == 3:
+        oneplayer('hard')
     if gamemode == 4:
         twoplayer()
