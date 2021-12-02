@@ -128,13 +128,43 @@ def cpu_game(cur_user, cur_player, mode, player):
         # Try exception block for MOVE input
         try:
             if cur_user == 'CPU':
+                soln = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]]
                 # CPU turn
                 # decipher mode
                 if mode == 'easy':
                     # pick randomly
                     move = np.random.randint(1, 9)
-
-
+                if mode == 'medium':
+                    # Search for win, then block, then random pick
+                    # search for win
+                    move = 0
+                    opp_player = 'O'
+                    if cur_player == 'O':
+                        opp_player = 'X'
+                    for x in soln:
+                        if values[x[0]-1] == cur_player and values[x[1]-1] == cur_player and values[x[2]-1] != 'X' and \
+                                values[x[2]-1] != 'O':
+                            move = x[2]
+                        if values[x[1]-1] == cur_player and values[x[2]-1] == cur_player and values[x[0]-1] != 'X' and \
+                                values[x[0]-1] != 'O':
+                            move = x[0]
+                        if values[x[0]-1] == cur_player and values[x[2]-1] == cur_player and values[x[1]-1] != 'X' and \
+                                values[x[1]-1] != 'O':
+                            move = x[1]
+                    # block move
+                    for x in soln:
+                        if values[x[0]-1] == opp_player and values[x[1]-1] == opp_player and values[x[2]-1] != 'X' and \
+                                values[x[2]-1] != 'O':
+                            move = x[2]
+                        if values[x[1]-1] == opp_player and values[x[2]-1] == opp_player and values[x[0]-1] != 'X' and \
+                                values[x[0]-1] != 'O':
+                            move = x[0]
+                        if values[x[0]-1] == opp_player and values[x[2]-1] == opp_player and values[x[1]-1] != 'X' and \
+                                values[x[1]-1] != 'O':
+                            move = x[1]
+                    # random move
+                    if move == 0:
+                        move = np.random.randint(1, 9)
             else:
                 print("Player ", cur_player, " turn. Which box? : ", end="")
                 move = int(input())
