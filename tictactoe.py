@@ -459,15 +459,20 @@ def twoplayer():
 
 
 def showscores():
-    player = input("Enter name: ")
-    print("\n")
-    # look for name
+    score = False
     data = []
-    for x in dict:
-        if x[0] == player:
-            data.append(x[1])
-            data.append(x[2])
-            data.append(x[3])
+    while not score:
+        player = input("Enter name: ")
+        print("\n")
+        # look for name
+        for x in dict:
+            if x[0] == player:
+                score = True
+                data.append(x[1])
+                data.append(x[2])
+                data.append(x[3])
+        if not score:
+            print('Name not found, try again.\n')
 
     labels = 'Wins', 'Losses', 'Ties'
 
