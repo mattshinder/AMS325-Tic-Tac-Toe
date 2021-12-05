@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 # Function to print Tic Tac Toe
@@ -113,6 +114,43 @@ def single_game(cur_player):
             cur_player = 'X'
 
 
+def winmove(cur_player, values):
+    soln = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]]
+
+    for x in soln:
+        if values[x[0] - 1] == cur_player and values[x[1] - 1] == cur_player and values[x[2] - 1] != 'X' and \
+                values[x[2] - 1] != 'O':
+            return x[2]
+        if values[x[1] - 1] == cur_player and values[x[2] - 1] == cur_player and values[x[0] - 1] != 'X' and \
+                values[x[0] - 1] != 'O':
+            return x[0]
+        if values[x[0] - 1] == cur_player and values[x[2] - 1] == cur_player and values[x[1] - 1] != 'X' and \
+                values[x[1] - 1] != 'O':
+            return x[1]
+    # nothing found, return 0
+    return 0
+
+
+def blockmove(cur_player, values):
+    soln = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]]
+    opp_player = 'O'
+    if cur_player == 'O':
+        opp_player = 'X'
+
+    for x in soln:
+        if values[x[0] - 1] == opp_player and values[x[1] - 1] == opp_player and values[x[2] - 1] != 'X' and \
+                values[x[2] - 1] != 'O':
+            return x[2]
+        if values[x[1] - 1] == opp_player and values[x[2] - 1] == opp_player and values[x[0] - 1] != 'X' and \
+                values[x[0] - 1] != 'O':
+            return x[0]
+        if values[x[0] - 1] == opp_player and values[x[2] - 1] == opp_player and values[x[1] - 1] != 'X' and \
+                values[x[1] - 1] != 'O':
+            return x[1]
+    # nothing found, return 0
+    return 0
+
+
 # Function for a single game of Tic Tac Toe
 def cpu_game(cur_user, cur_player, mode, player):
     # Represents the Tic Tac Toe
@@ -137,34 +175,26 @@ def cpu_game(cur_user, cur_player, mode, player):
                 if mode == 'medium':
                     # Search for win, then block, then random pick
                     # search for win
-                    move = 0
-                    opp_player = 'O'
-                    if cur_player == 'O':
-                        opp_player = 'X'
-                    for x in soln:
-                        if values[x[0]-1] == cur_player and values[x[1]-1] == cur_player and values[x[2]-1] != 'X' and \
-                                values[x[2]-1] != 'O':
-                            move = x[2]
-                        if values[x[1]-1] == cur_player and values[x[2]-1] == cur_player and values[x[0]-1] != 'X' and \
-                                values[x[0]-1] != 'O':
-                            move = x[0]
-                        if values[x[0]-1] == cur_player and values[x[2]-1] == cur_player and values[x[1]-1] != 'X' and \
-                                values[x[1]-1] != 'O':
-                            move = x[1]
-                    # block move
-                    for x in soln:
-                        if values[x[0]-1] == opp_player and values[x[1]-1] == opp_player and values[x[2]-1] != 'X' and \
-                                values[x[2]-1] != 'O':
-                            move = x[2]
-                        if values[x[1]-1] == opp_player and values[x[2]-1] == opp_player and values[x[0]-1] != 'X' and \
-                                values[x[0]-1] != 'O':
-                            move = x[0]
-                        if values[x[0]-1] == opp_player and values[x[2]-1] == opp_player and values[x[1]-1] != 'X' and \
-                                values[x[1]-1] != 'O':
-                            move = x[1]
-                    # random move
+                    move = winmove(cur_player, values)
                     if move == 0:
-                        move = np.random.randint(1, 9)
+                        # block move
+                        move = blockmove(cur_player, values)
+                        if move == 0:
+                            # random move
+                            if move == 0:
+                                move = np.random.randint(1, 9)
+                if mode == 'hard':
+                    # Search for win, then block, then choose best pick
+                    # search for win
+                    move = winmove(cur_player, values)
+                    if move == 0:
+                        # block move
+                        move = blockmove(cur_player, values)
+                        if move == 0:
+                            # best pick
+                            if move == 0:
+                                move = np.random.randint(1, 9)
+
             else:
                 print("Player ", cur_player, " turn. Which box? : ", end="")
                 move = int(input())
@@ -428,6 +458,27 @@ def twoplayer():
             cur_player = player1
 
 
+def showscores():
+    player = input("Enter name: ")
+    print("\n")
+    # look for name
+    data = []
+    for x in dict:
+        if x[0] == player:
+            data.append(x[1])
+            data.append(x[2])
+            data.append(x[3])
+
+    labels = 'Wins', 'Losses', 'Ties'
+
+    fig1, ax1 = plt.subplots()
+    ax1.pie(data, labels=labels, autopct='%1.1f%%',
+            shadow=True, startangle=90)
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    plt.title('Scores for ' + player)
+    plt.show()
+
+
 if __name__ == "__main__":
 
     # import csv
@@ -444,6 +495,7 @@ if __name__ == "__main__":
     print("Enter 2 for Medium CPU")
     print("Enter 3 for Hard CPU")
     print("Enter 4 for 2 Player")
+    print("Enter 5 for Scores")
     gamemode = int(input("Choice: "))
     print("\n")
 
@@ -455,3 +507,5 @@ if __name__ == "__main__":
         oneplayer('hard')
     if gamemode == 4:
         twoplayer()
+    if gamemode == 5:
+        showscores()
