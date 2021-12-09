@@ -151,6 +151,94 @@ def blockmove(cur_player, values):
     return 0
 
 
+def evaluate(values, cur_player):
+    # calculate win
+    soln = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]]
+
+    for x in soln:
+        if values[x[0] - 1] == values[x[1] - 1] and values[x[1] - 1] == values[x[2] - 1]:
+            if values[x[0] - 1] == cur_player:
+                return 10
+            else:
+                return -10
+    # nothing found, return 0
+    return 0
+
+
+def calcscore(values, depth, cur_player, turn):
+    if cur_player == 'X':
+        opp_player = 'O'
+    else:
+        opp_player = 'X'
+    score = evaluate(values, cur_player)
+    if score == 10:
+        return score - depth
+    if score == -10:
+        return score + depth
+    # count spaces
+    count = 0
+    for x in values:
+        if x == 'O' or x == 'X':
+            count = count + 1
+    if count == 9:
+        # tie
+        return 0
+
+    if turn:
+        best = -1000
+        for x in values:
+            if x != 'X' and x != 'O':
+                # save move
+                save = x
+                # make move
+                values[int(x) - 1] = cur_player
+                # calc score
+                best = max(best, calcscore(values, depth + 1, opp_player, not turn))
+                # undo move
+                values[int(x) - 1] = save
+
+        return best
+    else:
+        best = 1000
+        for x in values:
+            if x != 'X' and x != 'O':
+                # save move
+                save = x
+                # make move
+                values[int(x) - 1] = opp_player
+                # calc score
+                best = min(best, calcscore(values, depth + 1, cur_player, not turn))
+                # undo move
+                values[int(x) - 1] = save
+        return best
+
+
+def findbestmove(values, cur_player):
+    # values is board, cur_player is either X or O
+
+    bestval = -1000
+    bestmove = 0
+    # loop through values looking for empty space
+    for x in values:
+        if x != 'X' and x != 'O':
+            # save move
+            save = x
+            # make move
+            values[int(x) - 1] = cur_player
+            # calc score
+            tempval = calcscore(values, 0, cur_player, False)
+            # undo move
+            values[int(x) - 1] = save
+            # if score > bestval, then update bestval and bestmove
+            if tempval == bestval:
+                if int(x) == 1 or int(x) == 3 or int(x) == 7 or int(x) == 9:
+                    bestmove = int(x)
+            elif tempval > bestval:
+                bestval = tempval
+                bestmove = int(x)
+    return bestmove
+
+
 # Function for a single game of Tic Tac Toe
 def cpu_game(cur_user, cur_player, mode, player):
     # Represents the Tic Tac Toe
@@ -166,7 +254,6 @@ def cpu_game(cur_user, cur_player, mode, player):
         # Try exception block for MOVE input
         try:
             if cur_user == 'CPU':
-                soln = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]]
                 # CPU turn
                 # decipher mode
                 if mode == 'easy':
@@ -193,7 +280,21 @@ def cpu_game(cur_user, cur_player, mode, player):
                         if move == 0:
                             # best pick
                             if move == 0:
-                                move = np.random.randint(1, 9)
+                                # count values open
+                                count = 0
+                                for x in values:
+                                    if x == 'O' or x == 'X':
+                                        count = count + 1
+                                # 0 values
+                                if count == 0:
+                                    move = 1
+                                elif count == 1:
+                                    if values[8] != 9:
+                                        move = 1
+                                    else:
+                                        move = findbestmove(values, cur_player)
+                                else:
+                                    move = findbestmove(values, cur_player)
 
             else:
                 print("Player ", cur_player, " turn. Which box? : ", end="")
@@ -461,12 +562,13 @@ def twoplayer():
 def showscores():
     score = False
     data = []
+    user = ''
     while not score:
-        player = input("Enter name: ")
+        user = input("Enter name: ")
         print("\n")
         # look for name
         for x in dict:
-            if x[0] == player:
+            if x[0] == user:
                 score = True
                 data.append(x[1])
                 data.append(x[2])
@@ -480,7 +582,7 @@ def showscores():
     ax1.pie(data, labels=labels, autopct='%1.1f%%',
             shadow=True, startangle=90)
     ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-    plt.title('Scores for ' + player)
+    plt.title('Scores for ' + user)
     plt.show()
 
 
